@@ -1,8 +1,8 @@
 import sqlite3
 import sys
-from PyQt5 import uic
-from PyQt5.QtWidgets import QWidget, QApplication, QTableWidgetItem, QPushButton, QHBoxLayout, QTableWidget, QLineEdit, \
-    QMessageBox
+from PyQt5.QtWidgets import QWidget, QApplication, QTableWidgetItem, QLineEdit, QMessageBox
+from UI.main import Ui_Form as main_form
+from UI.addEditCoffeeForm import Ui_Form as add_edit_form
 
 
 def get_column_names(cursor, table_name):
@@ -12,11 +12,11 @@ def get_column_names(cursor, table_name):
     return ans
 
 
-class EditingDataForm(QWidget):
+class EditingDataForm(QWidget, add_edit_form):
     def __init__(self, parent):
         super(EditingDataForm, self).__init__()
         self.parent = parent
-        uic.loadUi('addEditCoffeeForm.ui', self)
+        self.setupUi(self)
         columns = get_column_names(parent.cursor, parent.table_name)
         self.les = [QLineEdit() for i in range(len(columns))]
         [self.formLayout.addRow(label, le) for label, le in zip(columns, self.les)]
@@ -62,15 +62,15 @@ class EditingDataForm(QWidget):
         d.exec()
 
 
-class Example(QWidget):
+class Example(QWidget, main_form):
     def __init__(self):
         super().__init__()
         self.initUI()
 
     def initUI(self):
         self.table_name = 'coffee'
-        uic.loadUi('main.ui', self)
-        self.connection = sqlite3.connect('coffee.sqlite')
+        self.setupUi(self)
+        self.connection = sqlite3.connect('data/coffee.sqlite')
         self.cursor = self.connection.cursor()
         self.update_table()
         self.editing_data_form = EditingDataForm(self)
